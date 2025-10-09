@@ -1,0 +1,100 @@
+services:
+
+  # 1. Contenedor para la aplicación de desarrollo .NET
+  app:
+    build:
+      # El 'context' ahora apunta a la carpeta raíz (..) donde está tu código
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: net-dev-container
+    ports:
+      # Mapea el puerto 8080 del host al 80 del contenedor, para que puedas acceder a tu app web.
+      - "8082:80"
+    volumes:
+      # Monta la carpeta actual en el directorio /workspaces del contenedor para que puedas editar código
+      - .:/workspaces:cached
+    # Asegura que las bases de datos estén listas antes de que la app intente conectarse
+    depends_on:
+      - postgres_db
+      - sqlserver_db
+    # Mantiene el contenedor en ejecución para que puedas entrar y usar la consola
+    command: sleep infinity
+    networks:
+      - app_network
+
+  # 2. Contenedor para la base de datos PostgreSQL
+  postgres_db:
+    image: postgres:16
+    container_name: postgres_db
+    # La ruta del archivo .env ahora es local a la carpeta .devcontainer
+    env_file:
+      - .env
+    environment:
+      # Variables para la base de datos, usando valores de tu archivo .env
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      # Mapea el puerto de la base de datos
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      # Mantiene los datos de la base de datos persistentes
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  # 3. Contenedor para la base de datos SQL Server
+  sqlserver_db:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: sqlserver_db
+    environment:
+      # Acepta el EULA y establece la contraseña para el usuario 'sa'
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "yourStrongPassword!" # 🚨 ¡Cámbialo por una contraseña segura!
+      MSSQL_PID: "Developer"
+    ports:
+      # Mapea el puerto de la base de datos
+      - "1433:1433"
+    volumes:
+      # Mantiene los datos de la base de datos persistentes
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - app_network
+
+  # 4. Contenedor para pgAdmin (interfaz web para PostgreSQL)
+  pgadmin_web:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_web
+    depends_on:
+      # Se asegura que la base de datos de Postgres esté saludable antes de iniciar
+      postgres_db:
+        condition: service_healthy
+    # La ruta del archivo .env ahora es local a la carpeta .devcontainer
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      # Mapea el puerto de la interfaz web
+      - "${PGADMIN_PORT}:80"
+    volumes:
+      # Mantiene la configuración de pgAdmin
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app_network
+
+# Definimos los volúmenes para que los datos persistan incluso si los contenedores se detienen
+volumes:
+  postgres_data:
+  sqlserver_data:
+  pgadmin_data:
+
+# Definimos una red común para que todos los servicios puedan comunicarse entre sí
+networks:
+  app_network:
