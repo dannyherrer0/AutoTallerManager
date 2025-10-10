@@ -7,6 +7,6 @@ namespace Infrastructure.Data
 {
     public class AutoTallerDbContext
     {
-        
+        public object Facturas { get; internal set; }
     }
 }
