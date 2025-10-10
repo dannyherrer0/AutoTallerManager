@@ -5,12 +5,14 @@ namespace Domain.Entities;
 
 public class Usuario : BaseEntity
 {
-    public int UsuarioId { get; set; }
+    public int Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string Correo { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public RolUsuario Rol { get; set; }
-    public ICollection<OrdenServicio> OrdenesComoMecanico { get; set; } = new List<OrdenServicio>();
-    public ICollection<OrdenServicio> OrdenesComoRecepcionista { get; set; } = new List<OrdenServicio>();
-    public ICollection<Auditoria> Auditorias { get; set; } = new List<Auditoria>();
+    public string Rol { get; set; } = "Recepcionista";
+    public new bool Activo { get; set; } = true;
+    public new DateTime FechaCreacion { get; set; }
+    
+    // Navegación
+    public ICollection<OrdenServicio> OrdenesAsignadas { get; set; } = new List<OrdenServicio>();
 }
