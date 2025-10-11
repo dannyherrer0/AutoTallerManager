@@ -1,12 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Infrastructure.Data
+using Domain.Entities;  
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Data;
+
+public class AutoTallerDbContext : DbContext
 {
-    public class AutoTallerDbContext
+    public AutoTallerDbContext(DbContextOptions<AutoTallerDbContext> options) 
+        : base(options)
     {
-        public object Facturas { get; internal set; }
+    }
+
+    public DbSet<Cliente> Clientes { get; set; }
+    public DbSet<Vehiculo> Vehiculos { get; set; }
+    public DbSet<OrdenServicio> OrdenesServicio { get; set; }
+    public DbSet<Repuesto> Repuestos { get; set; }
+    public DbSet<DetalleOrden> DetallesOrden { get; set; }
+    public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<Factura> Facturas { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        // ... configuraciones Fluent API
     }
 }
