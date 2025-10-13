@@ -120,12 +120,9 @@ https://localhost:7XXX/swagger
 
 ## 👥 Contribuidores
 
-- [Tu Nombre] - Desarrollo principal
-
-## 📄 Licencia
-
-Este proyecto es parte de un trabajo académico.
-
+- DANIELA SOFIA HERRERA ROJAS
+- SANTIAGO VALDERRAMA LAITON
+- DARWIN FELIPE ARENAS CARVAJAL
 ---
 
 ⚙️ Desarrollado con ASP.NET Core
