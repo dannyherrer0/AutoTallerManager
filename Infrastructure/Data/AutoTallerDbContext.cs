@@ -23,16 +23,29 @@ public class AutoTallerDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Ignore<RateLimitConfig>();
+
+        modelBuilder.Ignore<Domain.Entities.BaseEntity>();
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property<DateTime>("FechaCreacion")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property<DateTime>("FechaActualizacion")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                    .ValueGeneratedOnAddOrUpdate();
+            }
+        }
+
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Usuario>()
         .Property(u => u.UsuarioId)
         .HasColumnName("UsuarioId");
-        modelBuilder.Entity<BaseEntity>().Property<DateTime>("FechaCreacion")
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-        modelBuilder.Entity<BaseEntity>().Property<DateTime>("FechaActualizacion")
-            .HasDefaultValueSql("CURRENT_TIMESTAMP")
-            .ValueGeneratedOnAddOrUpdate();
+        
         modelBuilder.Entity<DetalleOrden>()
             .Property(d => d.Subtotal)
             .HasComputedColumnSql("Cantidad * PrecioUnitario", stored: true);
@@ -101,6 +114,12 @@ public class AutoTallerDbContext : DbContext
         modelBuilder.Entity<Vehiculo>()
         .HasIndex(v => v.VIN)
         .IsUnique();
+
+        modelBuilder.Entity<OrdenServicio>()
+    .HasOne(o => o.Mecanico)
+    .WithMany()
+    .HasForeignKey(o => o.MecanicoId)
+    .OnDelete(DeleteBehavior.Restrict);
 
 
     }
