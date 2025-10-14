@@ -81,7 +81,7 @@ public class LoginService : ILoginService
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioId.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, usuario.Correo),
             new Claim(ClaimTypes.Role, usuario.Rol),
             new Claim(ClaimTypes.Name, usuario.Nombre),

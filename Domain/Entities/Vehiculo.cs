@@ -7,6 +7,7 @@ public class Vehiculo : BaseEntity
     public int VehiculoId { get; set; }
     public int ClienteId { get; set; }
     public int BrandId { get; set; }
+    public string Marca { get; set; } = string.Empty; 
     public string Modelo { get; set; } = string.Empty;
     public int Anio { get; set; }
     public string VIN { get; set; } = string.Empty;//este es el id del vehiculo  o bueno, es como un serial de vehiculo

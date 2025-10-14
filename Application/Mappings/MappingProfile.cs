@@ -86,7 +86,7 @@ public class MappingProfile : Profile
         CreateMap<Usuario, AuthResponseDto>()
             .ForMember(dest => dest.Usuario, opt => opt.MapFrom(src => new UsuarioDto
             {
-                Id = src.Id,
+                Id = src.UsuarioId,
                 Nombre = src.Nombre,
                 Correo = src.Correo,
                 Rol = src.Rol,

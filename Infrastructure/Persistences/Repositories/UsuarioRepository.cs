@@ -65,7 +65,7 @@ public class UsuarioRepository : IUsuarioRepository
         foreach (var mecanico in mecanicos)
         {
             var ordenesActivas = await _context.OrdenesServicio
-                .CountAsync(o => o.MecanicoId == mecanico.Id && 
+                .CountAsync(o => o.MecanicoId == mecanico.UsuarioId && 
                                o.Activo &&
                                (o.Estado == Domain.Enums.EstadoOrden.Pendiente || 
                                 o.Estado == Domain.Enums.EstadoOrden.EnProceso));

@@ -1,15 +1,17 @@
 
-using Domain.Entities;  
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-
 namespace Infrastructure.Data;
 
 public class AutoTallerDbContext : DbContext
 {
-    public AutoTallerDbContext(DbContextOptions<AutoTallerDbContext> options) 
+    public AutoTallerDbContext(DbContextOptions<AutoTallerDbContext> options)
         : base(options)
     {
     }
+    public DbSet<Auditoria> Auditorias { get; set; }
+    public DbSet<RateLimitConfig> RateLimitConfigs { get; set; }
+
 
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Vehiculo> Vehiculos { get; set; }
@@ -31,6 +33,20 @@ public class AutoTallerDbContext : DbContext
         modelBuilder.Entity<BaseEntity>().Property<DateTime>("FechaActualizacion")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .ValueGeneratedOnAddOrUpdate();
+        modelBuilder.Entity<DetalleOrden>()
+            .Property(d => d.Subtotal)
+            .HasComputedColumnSql("Cantidad * PrecioUnitario", stored: true);
+        modelBuilder.Entity<Factura>()
+        .Property(f => f.FormaPago)
+        .HasConversion<string>();
+
+        modelBuilder.Entity<OrdenServicio>()
+            .Property(o => o.TipoServicio)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<OrdenServicio>()
+            .Property(o => o.Estado)
+            .HasConversion<string>();
 
 
     }
