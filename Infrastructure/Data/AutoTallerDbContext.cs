@@ -49,5 +49,49 @@ public class AutoTallerDbContext : DbContext
             .HasConversion<string>();
 
 
+        modelBuilder.Entity<DetalleOrden>()
+            .Property(d => d.Subtotal)
+            .HasComputedColumnSql("Cantidad * PrecioUnitario", stored: true);
+        modelBuilder.Entity<OrdenServicio>()
+            .Property(o => o.TipoServicio)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<OrdenServicio>()
+            .Property(o => o.Estado)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Factura>()
+            .Property(f => f.FormaPago)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Factura>()
+            .Property(f => f.Estado)
+            .HasConversion<string>();
+
+        
+        modelBuilder.Entity<Repuesto>()
+    .ToTable(t =>
+    {
+        t.HasCheckConstraint("CK_Repuesto_Precio_NonNeg", "PrecioUnitario >= 0");
+        t.HasCheckConstraint("CK_Repuesto_Cantidad_NonNeg", "CantidadStock >= 0");
+    });
+
+    modelBuilder.Entity<OrdenServicio>()
+        .ToTable(t =>
+        {
+            t.HasCheckConstraint("CK_Orden_CostoManoObra_NonNeg", "CostoManoObra >= 0");
+        });
+
+    modelBuilder.Entity<Factura>()
+        .ToTable(t =>
+        {
+            t.HasCheckConstraint("CK_Factura_MontoTotal_NonNeg", "MontoTotal >= 0");
+        });
+
+        modelBuilder.Entity<Usuario>().HasIndex(u => u.Correo).HasDatabaseName("idx_correo");
+        modelBuilder.Entity<Cliente>().HasIndex(c => c.Nombre).HasDatabaseName("idx_nombre");
+        modelBuilder.Entity<Vehiculo>().HasIndex(v => v.VIN).HasDatabaseName("idx_vin");
+
+
     }
 }
