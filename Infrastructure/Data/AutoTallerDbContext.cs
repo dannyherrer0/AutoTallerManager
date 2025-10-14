@@ -88,9 +88,19 @@ public class AutoTallerDbContext : DbContext
             t.HasCheckConstraint("CK_Factura_MontoTotal_NonNeg", "MontoTotal >= 0");
         });
 
-        modelBuilder.Entity<Usuario>().HasIndex(u => u.Correo).HasDatabaseName("idx_correo");
-        modelBuilder.Entity<Cliente>().HasIndex(c => c.Nombre).HasDatabaseName("idx_nombre");
-        modelBuilder.Entity<Vehiculo>().HasIndex(v => v.VIN).HasDatabaseName("idx_vin");
+        modelBuilder.Entity<Usuario>()
+        .HasIndex(u => u.Correo)
+        .HasDatabaseName("idx_correo");
+        modelBuilder.Entity<Cliente>()
+        .HasIndex(c => c.Nombre)
+        .HasDatabaseName("idx_nombre");
+        modelBuilder.Entity<Vehiculo>()
+        .HasIndex(v => v.VIN)
+        .HasDatabaseName("idx_vin");
+
+        modelBuilder.Entity<Vehiculo>()
+        .HasIndex(v => v.VIN)
+        .IsUnique();
 
 
     }
