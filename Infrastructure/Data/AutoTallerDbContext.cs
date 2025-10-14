@@ -22,6 +22,16 @@ public class AutoTallerDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        // ... configuraciones Fluent API
+        modelBuilder.Entity<Usuario>()
+        .Property(u => u.UsuarioId)
+        .HasColumnName("UsuarioId");
+        modelBuilder.Entity<BaseEntity>().Property<DateTime>("FechaCreacion")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<BaseEntity>().Property<DateTime>("FechaActualizacion")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .ValueGeneratedOnAddOrUpdate();
+
+
     }
 }
