@@ -1,127 +1,30 @@
-# 🚗 AutoTallerManager
+# Examen Cierre Orden y generación de factura AutoTallerManager
 
-Sistema backend RESTful para la gestión integral de un taller automotriz moderno, desarrollado con ASP.NET Core y arquitectura hexagonal.
+Agregué CerrarOrdenServicio y GenerarFactura para calcular la mano de obra y repuestos 
 
-## 📋 Descripción
+# Alcance
 
-AutoTallerManager centraliza y automatiza procesos clave como:
-- Gestión de clientes y vehículos
-- Órdenes de servicio y seguimiento
-- Control de inventario de repuestos
-- Facturación automática
-- Sistema de roles y permisos (Admin, Mecánico, Recepcionista)
+CerrarOrdenServicio 
+Cambia el estado de la orden a “completada”.
+Consume definitivamente las reservas de repuestos asociadas (descuenta stock).
+Registra tiempos finales (p. ej., fechaCierre) y el usuario que ejecuta la acción.
+GenerarFactura
+Endpoint: POST /api/facturas
+Crea una Factura enlazada a la orden, con desglose de ítems (repuestos) y mano de obra.
+Calcula subtotal, impuestos (si aplica) y total.
+La orden debe estar completada para facturar (evitar facturar órdenes abiertas).
+Persistir el enlace factura ↔ orden (p. ej., ordenId en factura).
+Seguridad y roles (JWT)
+Mecánico: puede cerrar orden.
+Admin: puede consultar todo (y facturar si así se define).
+Recepcionista: no puede facturar; puede consultar lo que su rol permita.
+Responder con 401 (no autenticado) y 403 (autenticado sin permiso) cuando corresponda.
 
-## 🏗️ Arquitectura
 
-El proyecto sigue el patrón de **Arquitectura Hexagonal** (Ports & Adapters) con 4 capas:
-
-```
-AutoTallerManager/
-├── Domain/          # Entidades y lógica de negocio
-├── Application/     # DTOs, casos de uso y servicios
-├── Infrastructure/  # EF Core, Repositories, Unit of Work
-└── Api/            # Controladores REST y configuración
-```
-
-## 🛠️ Tecnologías
-
-- **Framework:** ASP.NET Core 8.0
-- **ORM:** Entity Framework Core
-- **Base de datos:** MySQL / PostgreSQL / SQL Server
-- **Autenticación:** JWT (JSON Web Tokens)
-- **Documentación:** Swagger / OpenAPI
-- **Mapeo:** AutoMapper
-- **Rate Limiting:** AspNetCoreRateLimit
-
-## 📦 Requisitos Previos
-
-- .NET 8.0 SDK
-- MySQL 8.0+ (o PostgreSQL/SQL Server)
-- Visual Studio 2022 / VS Code / Rider
-
-## 🚀 Instalación y Configuración
-
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/TU_USUARIO/AutoTallerManager.git
-cd AutoTallerManager
-```
-
-### 2. Restaurar paquetes NuGet
-
-```bash
-dotnet restore
-```
-
-### 3. Configurar la cadena de conexión
-
-Edita `Api/appsettings.json` y configura tu conexión a la base de datos:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=autotaller;User=root;Password=tu_password;"
-  }
-}
-```
-
-### 4. Aplicar migraciones
-
-```bash
-cd Api
-dotnet ef database update
-```
-
-### 5. Ejecutar el proyecto
-
-```bash
-dotnet run
-```
-
-La API estará disponible en: `https://localhost:7XXX` (el puerto se muestra en consola)
-
-## 📚 Documentación API
-
-Accede a la documentación interactiva Swagger en:
-```
-https://localhost:7XXX/swagger
-```
-
-## 🔐 Roles y Permisos
-
-- **Admin:** Acceso total al sistema
-- **Mecánico:** Actualización de órdenes y generación de facturas
-- **Recepcionista:** Creación de órdenes y consulta de clientes
-
-## 📝 Endpoints Principales
-
-### Autenticación
-- `POST /api/auth/login` - Iniciar sesión
-- `POST /api/auth/register` - Registrar usuario
-
-### Clientes
-- `GET /api/clientes` - Listar clientes (paginado)
-- `POST /api/clientes` - Crear cliente
-- `GET /api/clientes/{id}` - Obtener cliente
-- `PUT /api/clientes/{id}` - Actualizar cliente
-- `DELETE /api/clientes/{id}` - Eliminar cliente
-
-### Órdenes de Servicio
-- `GET /api/ordenes` - Listar órdenes
-- `POST /api/ordenes` - Crear orden
-- `PUT /api/ordenes/{id}` - Actualizar orden
-- `POST /api/ordenes/{id}/cerrar` - Cerrar orden y generar factura
-
-### Repuestos
-- `GET /api/repuestos` - Listar repuestos
-- `POST /api/repuestos` - Agregar repuesto
-- `PUT /api/repuestos/{id}/stock` - Actualizar stock
-
-## 👥 Contribuidores
-
-- DANIELA SOFIA HERRERA ROJAS
-- SANTIAGO VALDERRAMA LAITON
-- DARWIN FELIPE ARENAS CARVAJAL
-
-⚙️ Desarrollado con ASP.NET Core
+## Reglas de negocio clave
+Consumo de reservas: al cerrar la orden, toda reserva pendiente debe convertirse en consumo (descuento final de stock); no deben quedar reservas activas para esa orden.
+Idempotencia: evitar cierres duplicados o facturas duplicadas para la misma orden (si se reintenta, devolver estado actual o 409 Conflict con mensaje claro).
+Precondiciones para facturar:
+Orden en estado “completada”.
+Totales calculados a partir de ítems consumidos + mano de obra.
+Validaciones mínimas: existencia de la orden, estado válido para cerrar, que exista al menos un ítem o mano de obra (si la política lo exige), y que el usuario tenga el rol adecuado.

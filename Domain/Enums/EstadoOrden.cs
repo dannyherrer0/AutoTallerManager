@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Enums;
 
-    public enum EstadoOrden
-    {
-        Pendiente,
-        EnProceso,
-        Completada,
-        Cancelada
-    }
+public enum EstadoOrden
+{
+    Pendiente,
+    EnProceso,
+    Completada,
+    Cancelada,
+    Cerrada
+}

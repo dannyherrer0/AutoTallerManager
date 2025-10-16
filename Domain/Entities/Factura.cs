@@ -7,6 +7,8 @@ namespace Domain.Entities;
 public class Factura : BaseEntity
 {
     public int FacturaId { get; set; }
+
+    public int GenerarFactura { get; set; }
     public string NumeroFactura { get; set; } = string.Empty;
     public int OrdenServicioId { get; set; }
     public int ClienteId { get; set; }

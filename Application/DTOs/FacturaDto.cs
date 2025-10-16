@@ -4,6 +4,7 @@ namespace Application.DTOs;
 
 public class FacturaDto
 {
+    public static string Correo { get; internal set; }
     public int FacturaId { get; set; }
     public string NumeroFactura { get; set; } = string.Empty;
     public int OrdenServicioId { get; set; }

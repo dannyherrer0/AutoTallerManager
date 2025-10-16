@@ -16,4 +16,5 @@ public interface IUsuarioRepository
     Task AddAsync(Usuario usuario);
     void Update(Usuario usuario);
     void Delete(Usuario usuario);
+    Task<Usuario> GetByCorreoAsync(object correo);
 }

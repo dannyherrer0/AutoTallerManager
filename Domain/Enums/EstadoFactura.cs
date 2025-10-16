@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Enums;
 
-    public enum EstadoFactura
-    {
-        Pendiente,
-        Pagada,
-        Anulada
-    }
+public enum EstadoFactura
+{
+    Pendiente,
+    Pagada,
+    Anulada,
+    Generada
+}
 

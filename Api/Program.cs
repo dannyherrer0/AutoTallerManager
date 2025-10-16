@@ -19,8 +19,6 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IVehiculoService, VehiculoService>();
-
-
 builder.Services.AddAutoMapper(typeof(Program));
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
